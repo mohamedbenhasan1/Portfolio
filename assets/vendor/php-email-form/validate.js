@@ -62,15 +62,22 @@
         throw new Error(`${response.status} ${response.statusText} ${response.url}`); 
       }
     })
-    .then(data => {
-      thisForm.querySelector('.loading').classList.remove('d-block');
-      if (data.trim() == 'OK') {
-        thisForm.querySelector('.sent-message').classList.add('d-block');
-        thisForm.reset(); 
-      } else {
-        throw new Error(data ? data : 'Form submission failed and no error message returned from: ' + action); 
-      }
-    })
+    .then(response => response.json())
+.then(data => {
+  thisForm.querySelector('.loading').classList.remove('d-block');
+
+  if (data.ok) {
+    thisForm.querySelector('.sent-message').classList.add('d-block');
+    thisForm.reset();
+
+    // Optional: redirect to thank you page
+    // window.location.href = data.next;
+
+  } else {
+    throw new Error(data.message || 'Form submission failed');
+  }
+})
+
     .catch((error) => {
       displayError(thisForm, error);
     });
